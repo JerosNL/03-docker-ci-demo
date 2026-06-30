@@ -14,14 +14,14 @@ variables:
   - group: docker-secrets
 
 stages:
-  - stage: Build
+- stage: Build
     displayName: 'Build and test'
     jobs:
       - job: DockerBuild
         displayName: 'Build Docker image'
         steps:
           - script: |
-              docker build -t $(registry)/jerosNL/$(imageName):$(imageTag) -t $(registry)/jerosNL/$(imageName):latest .
+              docker build -t $(registry)/jerosnl/$(imageName):$(imageTag) -t $(registry)/jerosnl/$(imageName):latest .
             displayName: 'Build image'
 
   - stage: Push
@@ -36,6 +36,6 @@ stages:
             displayName: 'Login to ghcr.io'
 
           - script: |
-              docker push $(registry)/jerosNL/$(imageName):$(imageTag)
-              docker push $(registry)/jerosNL/$(imageName):latest
+              docker push $(registry)/jerosnl/$(imageName):$(imageTag)
+              docker push $(registry)/jerosnl/$(imageName):latest
             displayName: 'Push image'
