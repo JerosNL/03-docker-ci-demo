@@ -1,0 +1,41 @@
+trigger:
+  - main
+
+pool:
+  name: Default
+
+variables:
+  - name: imageName
+    value: 'calculator'
+  - name: registry
+    value: 'ghcr.io'
+  - name: imageTag
+    value: '$(Build.BuildId)'
+  - group: docker-secrets
+
+stages:
+  - stage: Build
+    displayName: 'Build and test'
+    jobs:
+      - job: DockerBuild
+        displayName: 'Build Docker image'
+        steps:
+          - script: |
+              docker build -t $(registry)/jerosNL/$(imageName):$(imageTag) -t $(registry)/jerosNL/$(imageName):latest .
+            displayName: 'Build image'
+
+  - stage: Push
+    displayName: 'Push to registry'
+    dependsOn: Build
+    jobs:
+      - job: DockerPush
+        displayName: 'Push Docker image'
+        steps:
+          - script: |
+              echo $(GITHUB_TOKEN) | docker login $(registry) -u JerosNL --password-stdin
+            displayName: 'Login to ghcr.io'
+
+          - script: |
+              docker push $(registry)/jerosNL/$(imageName):$(imageTag)
+              docker push $(registry)/jerosNL/$(imageName):latest
+            displayName: 'Push image'
